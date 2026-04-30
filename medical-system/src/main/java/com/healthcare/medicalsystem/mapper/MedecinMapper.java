@@ -1,0 +1,13 @@
+package com.healthcare.medicalsystem.mapper;
+
+import com.healthcare.medicalsystem.dto.MedecinDTO;
+import com.healthcare.medicalsystem.entity.Medecin;
+import org.mapstruct.Mapper;
+import java.util.List;
+
+@Mapper(componentModel = "spring")
+public interface MedecinMapper {
+    MedecinDTO toDTO(Medecin medecin);
+    Medecin toEntity(MedecinDTO dto);
+    List<MedecinDTO> toDTOList(List<Medecin> medecins);
+}
