@@ -27,7 +27,7 @@ CREATE TABLE dossier_medical (
 CREATE TABLE rendez_vous (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     date_rendez_vous DATETIME NOT NULL,
-    statut VARCHAR(50),
+    statut ENUM('PLANIFIE', 'CONFIRME', 'ANNULE'),
     patient_id BIGINT,
     medecin_id BIGINT,
     FOREIGN KEY (patient_id) REFERENCES patient(id),

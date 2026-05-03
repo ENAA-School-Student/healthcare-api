@@ -1,5 +1,6 @@
 package com.healthcare.medicalsystem.dto;
 
+import com.healthcare.medicalsystem.entity.StatutRendezVous;
 import lombok.*;
 import java.time.LocalDateTime;
 
@@ -7,7 +8,7 @@ import java.time.LocalDateTime;
 public class RendezVousDTO {
     private Long id;
     private LocalDateTime dateRendezVous;
-    private String statut;
+    private StatutRendezVous statut;
     private Long patientId;
     private Long medecinId;
 }

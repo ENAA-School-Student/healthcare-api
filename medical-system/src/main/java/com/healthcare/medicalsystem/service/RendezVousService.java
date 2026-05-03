@@ -2,6 +2,7 @@ package com.healthcare.medicalsystem.service;
 
 import com.healthcare.medicalsystem.dto.RendezVousDTO;
 import com.healthcare.medicalsystem.entity.RendezVous;
+import com.healthcare.medicalsystem.entity.StatutRendezVous;
 import com.healthcare.medicalsystem.mapper.RendezVousMapper;
 import com.healthcare.medicalsystem.repository.RendezVousRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class RendezVousService {
     private final RendezVousMapper rendezVousMapper;
 
     public RendezVousDTO create(RendezVousDTO dto) {
-        dto.setStatut("PLANIFIE");
+        dto.setStatut(StatutRendezVous.PLANIFIE);
         return rendezVousMapper.toDTO(rendezVousRepository.save(rendezVousMapper.toEntity(dto)));
     }
 
@@ -31,7 +32,7 @@ public class RendezVousService {
     public void annuler(Long id) {
         RendezVous rdv = rendezVousRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("RDV introuvable"));
-        rdv.setStatut("ANNULE");
+        rdv.setStatut(StatutRendezVous.ANNULE);
         rendezVousRepository.save(rdv);
     }
 

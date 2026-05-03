@@ -13,7 +13,9 @@ public class RendezVous {
     private Long id;
 
     private LocalDateTime dateRendezVous;
-    private String statut;
+
+    @Enumerated(EnumType.STRING)
+    private StatutRendezVous statut;
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
