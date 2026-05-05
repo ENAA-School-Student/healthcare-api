@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -14,6 +16,12 @@ import java.util.List;
 public class RendezVousController {
 
     private final RendezVousService rendezVousService;
+
+    @GetMapping("/date")
+    @Operation(summary =  "Trouver List rendez_vous par date")
+    public ResponseEntity<List<RendezVousDTO>> finRendezVous(@RequestBody LocalDateTime date) {
+        return ResponseEntity.ok(rendezVousService.finRendezVousByDate(date));
+    }
 
     @PostMapping
     @Operation(summary = "Ajouter un RendezVous")

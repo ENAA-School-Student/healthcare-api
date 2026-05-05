@@ -7,6 +7,8 @@ import com.healthcare.medicalsystem.mapper.RendezVousMapper;
 import com.healthcare.medicalsystem.repository.RendezVousRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -15,6 +17,13 @@ public class RendezVousService {
 
     private final RendezVousRepository rendezVousRepository;
     private final RendezVousMapper rendezVousMapper;
+
+
+    public List<RendezVousDTO> finRendezVousByDate(LocalDateTime date){
+        return rendezVousMapper.toDTOList(rendezVousRepository.findRendezVousByDateRendezVous(date));
+    }
+
+
 
     public RendezVousDTO create(RendezVousDTO dto) {
         dto.setStatut(StatutRendezVous.PLANIFIE);
@@ -45,6 +54,6 @@ public class RendezVousService {
     }
 
     public List<RendezVousDTO> findByMedecin(Long medecinId) {
-        return rendezVousMapper.toDTOList(rendezVousRepository.findByMedecinIdJPQL(medecinId));
+        return rendezVousMapper.toDTOList(rendezVousRepository.findByMedecinId(medecinId));
     }
 }

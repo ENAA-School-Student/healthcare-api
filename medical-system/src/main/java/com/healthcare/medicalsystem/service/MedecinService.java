@@ -31,10 +31,12 @@ public class MedecinService {
     }
 
     public void delete(Long id) {
+
         medecinRepository.deleteById(id);
     }
 
     public List<MedecinDTO> findAll() {
+
         return medecinMapper.toDTOList(medecinRepository.findAll());
     }
 
