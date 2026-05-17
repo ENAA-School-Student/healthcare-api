@@ -17,11 +17,6 @@ public class RendezVousController {
 
     private final RendezVousService rendezVousService;
 
-    @GetMapping("/date")
-    @Operation(summary =  "Trouver List rendez_vous par date")
-    public ResponseEntity<List<RendezVousDTO>> finRendezVous(@RequestBody LocalDateTime date) {
-        return ResponseEntity.ok(rendezVousService.finRendezVousByDate(date));
-    }
 
     @PostMapping
     @Operation(summary = "Ajouter un RendezVous")

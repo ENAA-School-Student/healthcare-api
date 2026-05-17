@@ -19,11 +19,6 @@ public class RendezVousService {
     private final RendezVousMapper rendezVousMapper;
 
 
-    public List<RendezVousDTO> finRendezVousByDate(LocalDateTime date){
-        return rendezVousMapper.toDTOList(rendezVousRepository.findRendezVousByDateRendezVous(date));
-    }
-
-
 
     public RendezVousDTO create(RendezVousDTO dto) {
         dto.setStatut(StatutRendezVous.PLANIFIE);
