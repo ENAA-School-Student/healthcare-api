@@ -20,41 +20,34 @@ public class JwtUtils {
     private int jwtExpiration;
 
     private Key getSignKey() {
+
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
 
-    // GÉNÈRE un token JWT pour un utilisateur
     public String generateToken(String username) {
 
-        return Jwts.builder()
-                .setSubject(username)           // qui est l'utilisateur
-                .setIssuedAt(new Date())        // quand le token a été créé
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration)) // quand il expire
-                .signWith(getSignKey(), SignatureAlgorithm.HS256) // signature
+        return Jwts.builder().setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+                .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // EXTRAIT le nom d'utilisateur depuis un token
     public String extractUsername(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignKey())
+
+        return Jwts.parserBuilder().setSigningKey(getSignKey())
                 .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+                .parseClaimsJws(token).getBody().getSubject();
     }
 
-    // VÉRIFIE si le token est valide (non expiré, signature correcte)
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSignKey())
-                    .build()
-                    .parseClaimsJws(token); // lève une exception si invalide
+            Jwts.parserBuilder().setSigningKey(getSignKey())
+                    .build().parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            return false; // token invalide ou expiré
+            return false;
         }
     }
 }

@@ -37,9 +37,9 @@ public class SecurityConfig {
 
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll() // autoriser les endpoints d'authentification)
+                        auth.requestMatchers("/api/auth/**").permitAll()
                             .anyRequest().authenticated())
-                .addFilterBefore(new JwtFilter(customUserDetailsService, jwtUtils), UsernamePasswordAuthenticationFilter.class)  // tous les autres endpoints nécessitent une authentification
+                .addFilterBefore(new JwtFilter(customUserDetailsService, jwtUtils), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
