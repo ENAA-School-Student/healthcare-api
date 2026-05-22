@@ -4,6 +4,7 @@ import com.healthcare.medicalsystem.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,9 +37,26 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         return http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/**").permitAll()
-                            .anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> auth
+                 // Public
+                 .requestMatchers("/api/auth/**").permitAll()
+
+                 // ADMIN seulement
+                 .requestMatchers(HttpMethod.DELETE, "/api/patients/**").hasRole("ADMIN")
+                 .requestMatchers(HttpMethod.DELETE, "/api/medecins/**").hasRole("ADMIN")
+                 .requestMatchers("/api/users/**").hasRole("ADMIN")
+
+                 // ADMIN + MEDECIN
+                 .requestMatchers("/api/dossiers/**").hasAnyRole("ADMIN","MEDECIN")
+
+                 // ADMIN + MEDECIN + PATIENT (lecture de son propre profil)
+                 .requestMatchers(HttpMethod.GET, "/api/rendezvous/**")
+                 .hasAnyRole("ADMIN","MEDECIN","PATIENT")
+                 .requestMatchers(HttpMethod.GET, "/api/patients/**")
+                 .hasAnyRole("ADMIN","MEDECIN","PATIENT")
+
+                 // Tout le reste : authentifié
+                 .anyRequest().authenticated())
                 .addFilterBefore(new JwtFilter(customUserDetailsService, jwtUtils), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

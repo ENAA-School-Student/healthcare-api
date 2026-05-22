@@ -1,9 +1,13 @@
 package com.healthcare.medicalsystem.controller;
 
 import com.healthcare.medicalsystem.dto.MedecinDTO;
+import com.healthcare.medicalsystem.dto.PatientDTO;
 import com.healthcare.medicalsystem.service.MedecinService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -36,7 +40,23 @@ public class MedecinController {
 
     @GetMapping
     @Operation(summary = "Lister les Medecins")
-    public ResponseEntity<List<MedecinDTO>> findAll() {
-        return ResponseEntity.ok(medecinService.findAll());
+    public ResponseEntity<Page<MedecinDTO>> findAll(
+        @PageableDefault(size = 10, sort = "nom") Pageable pageable) {
+        return ResponseEntity.ok(medecinService.findAll(pageable));
+    }
+
+    @GetMapping
+    @Operation(summary = "Lister les Medecins")
+    public ResponseEntity<Page<PatientDTO>> findAll(
+            @PageableDefault(size = 10, sort = "nom") Pageable pageable) {
+        return ResponseEntity.ok(patientService.findAll(pageable));
+    }
+
+    // Ajouter recherche par nom :
+    @GetMapping("/search")
+    public ResponseEntity<Page<PatientDTO>> search(
+            @RequestParam String nom,
+            @PageableDefault(size = 10, sort = "nom") Pageable pageable) {
+        return ResponseEntity.ok(patientService.searchByNom(nom, pageable));
     }
 }

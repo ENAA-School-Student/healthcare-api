@@ -38,10 +38,10 @@ public class AuthController {
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
 
+        User userSaved =  userRepository.save(user);
         Map<String, Object> response = new HashMap<>();
-        response.put("token", jwtUtils.generateToken(user.getUsername()));
+        response.put("token", jwtUtils.generateToken(userSaved.getUsername(), userSaved.getRole().name()));
         response.put("type", "Bearer");
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -54,7 +54,7 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
              if(authentication.isAuthenticated()) {
                  Map<String, Object> response = new HashMap<>();
-                 response.put("token", jwtUtils.generateToken(user.getUsername()));
+                 response.put("token", jwtUtils.generateToken(user.getUsername(), user.getRole().name()));
                  response.put("type", "Bearer");
                  return ResponseEntity.ok(response);
              }

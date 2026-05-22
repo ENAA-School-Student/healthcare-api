@@ -23,4 +23,7 @@ public class User {
 
     @NotBlank(message = "Le mot de passe est obligatoire")
     private String password;
+
+    @Enumerated(EnumType.STRING)  // stocke "ADMIN" pas 0,1,2
+    private Role role = Role.PATIENT;   // valeur par défaut
 }

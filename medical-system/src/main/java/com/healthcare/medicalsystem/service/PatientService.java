@@ -5,6 +5,8 @@ import com.healthcare.medicalsystem.entity.Patient;
 import com.healthcare.medicalsystem.mapper.PatientMapper;
 import com.healthcare.medicalsystem.repository.PatientRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -35,13 +37,19 @@ public class PatientService {
         patientRepository.deleteById(id);
     }
 
-    public List<PatientDTO> findAll() {
-        return patientMapper.toDTOList(patientRepository.findAll());
-    }
-
     public PatientDTO findById(Long id) {
          Patient patient = patientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Patient introuvable"));
         return patientMapper.toDTO(patient);
     }
+
+    public Page<PatientDTO> findAll(Pageable pageable) {
+        return patientMapper.toDTOList(patientRepository.findAll(pageable));
+
+    }
+
+    public Page<PatientDTO> searchByNom(String nom, Pageable pageable) {
+        return patientMapper.toDTOList(patientRepository.findByNom(nom, pageable));
+    }
+
 }
