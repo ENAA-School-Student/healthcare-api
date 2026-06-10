@@ -12,14 +12,13 @@ import java.util.List;
 
 public interface RendezVousRepository extends JpaRepository<RendezVous, Long> {
 
-    Page<RendezVous> findAll(Pageable pageable);
-    Page<RendezVous> findByStatut(StatutRendezVous statut, Pageable pageable);
-
     List<RendezVous> findByPatientId(Long patientId);
 
+    Page<RendezVous> findAll(Pageable pageable);
+    Page<RendezVous> findByStatut(StatutRendezVous statut, Pageable pageable);
+    
     @Query("SELECT r FROM RendezVous r WHERE r.medecin.id = :medecinId")
     List<RendezVous> findByMedecinId(@Param("medecinId") Long medecinId);
-
 
 
 

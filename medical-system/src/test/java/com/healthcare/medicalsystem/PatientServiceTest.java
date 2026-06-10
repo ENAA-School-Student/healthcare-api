@@ -5,6 +5,9 @@ import com.healthcare.medicalsystem.service.PatientService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -47,7 +50,9 @@ public class PatientServiceTest {
     @Test
     @Order(2)
     void testFindAllPatients() {
-        List<PatientDTO> patientListe = patientService.findAll();
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<PatientDTO> patientListe = patientService.findAll(pageable);
 
         assertNotNull(patientListe);
         assertFalse(patientListe.isEmpty());

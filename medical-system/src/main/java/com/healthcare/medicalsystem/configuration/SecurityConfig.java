@@ -38,24 +38,22 @@ public class SecurityConfig {
 
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                 // Public
+
                  .requestMatchers("/api/auth/**").permitAll()
 
-                 // ADMIN seulement
+
                  .requestMatchers(HttpMethod.DELETE, "/api/patients/**").hasRole("ADMIN")
                  .requestMatchers(HttpMethod.DELETE, "/api/medecins/**").hasRole("ADMIN")
                  .requestMatchers("/api/users/**").hasRole("ADMIN")
 
-                 // ADMIN + MEDECIN
                  .requestMatchers("/api/dossiers/**").hasAnyRole("ADMIN","MEDECIN")
 
-                 // ADMIN + MEDECIN + PATIENT (lecture de son propre profil)
                  .requestMatchers(HttpMethod.GET, "/api/rendezvous/**")
                  .hasAnyRole("ADMIN","MEDECIN","PATIENT")
-                 .requestMatchers(HttpMethod.GET, "/api/patients/**")
-                 .hasAnyRole("ADMIN","MEDECIN","PATIENT")
+                        .requestMatchers(HttpMethod.GET, "/api/patients/me").hasRole("PATIENT")
+                        .requestMatchers(HttpMethod.GET, "/api/patients/**").hasAnyRole("ADMIN","MEDECIN")
 
-                 // Tout le reste : authentifié
+
                  .anyRequest().authenticated())
                 .addFilterBefore(new JwtFilter(customUserDetailsService, jwtUtils), UsernamePasswordAuthenticationFilter.class)
                 .build();

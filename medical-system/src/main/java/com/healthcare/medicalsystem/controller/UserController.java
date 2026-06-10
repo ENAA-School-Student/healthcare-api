@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")  // protège toute la classe
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 
     private final UserRepository userRepository;

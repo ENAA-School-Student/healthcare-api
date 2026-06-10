@@ -22,6 +22,5 @@ public interface RendezVousMapper {
 
     List<RendezVousDTO> toDTOList(List<RendezVous> list);
 
-    Page<RendezVousDTO> toDTOList(Page<RendezVous> rendezVous);
 
 }

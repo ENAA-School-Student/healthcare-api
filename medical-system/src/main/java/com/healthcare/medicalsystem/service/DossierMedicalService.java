@@ -5,6 +5,8 @@ import com.healthcare.medicalsystem.entity.DossierMedical;
 import com.healthcare.medicalsystem.mapper.DossierMedicalMapper;
 import com.healthcare.medicalsystem.repository.DossierMedicalRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 
@@ -15,6 +17,7 @@ public class DossierMedicalService {
     private final DossierMedicalRepository dossierRepository;
     private final DossierMedicalMapper dossierMapper;
 
+    @CacheEvict(value = "dossier", allEntries = true)
     public DossierMedicalDTO create(DossierMedicalDTO dto) {
         dto.setDateCreation(LocalDate.now());
         return dossierMapper.toDTO(dossierRepository.save(dossierMapper.toEntity(dto)));
@@ -34,6 +37,7 @@ public class DossierMedicalService {
         return dossierMapper.toDTO(dossierRepository.save(d));
     }
 
+    @Cacheable(value = "patients", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     public DossierMedicalDTO findByPatient(Long patientId) {
         return dossierRepository.findByPatientId(patientId)
                 .map(dossierMapper::toDTO)

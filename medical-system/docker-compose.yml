@@ -1,34 +1,120 @@
 version: '3.8'
 
+  # ============================================================
+  #  HealthCare+ — Docker Compose complet (Partie 3)
+  #  Services : MySQL 8 + Redis 7 + Spring Boot App
+  # ============================================================
+
 services:
-  # Base de données MySQL
+
+  # ----------------------------------------------------------
+  # 1. BASE DE DONNÉES MySQL
+  # ----------------------------------------------------------
   mysql:
     image: mysql:8.0
+    container_name: healthcare_mysql
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: healthcare_db
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
     ports:
-      - "3306:3306"
+      - "3306:3306"                       # accessible depuis ta machine
     volumes:
-      - mysql_data:/var/lib/mysql   # sauvegarde les données
+      - mysql_data:/var/lib/mysql         # données persistantes
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 30s
+    networks:
+      - healthcare_net
 
-  # Ton application Spring Boot
+  # ----------------------------------------------------------
+  # 2. CACHE Redis
+  # ----------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: healthcare_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"                       # accessible depuis ta machine
+    volumes:
+      - redis_data:/data                  # persistance du cache (optionnel)
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    #   --appendonly yes     : persistance sur disque
+    #   --maxmemory 256mb    : limite la RAM utilisée par Redis
+    #   --maxmemory-policy   : supprime les clés les moins utilisées si plein
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - healthcare_net
+
+  # ----------------------------------------------------------
+  # 3. APPLICATION Spring Boot
+  # ----------------------------------------------------------
   app:
-    build: ./medical-system
+    build:
+      context: ./medical-system           # dossier contenant le Dockerfile
+      dockerfile: Dockerfile
+    container_name: healthcare_app
+    restart: unless-stopped
     ports:
       - "8080:8080"
     environment:
-      # "mysql" = le nom du service Docker ci-dessus
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/healthcare_db
+      # --- Base de données ---
+      # "mysql" = le nom du service Docker ci-dessus (résolution DNS interne)
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/healthcare_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "false"        # mettre false en production
+
+      # --- Redis ---
+      # "redis" = le nom du service Docker ci-dessus
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_CACHE_TYPE: redis
+      SPRING_CACHE_REDIS_TIME_TO_LIVE: 600000   # 10 minutes en ms
+
+      # --- JWT ---
+      JWT_SECRET: HealthCareSecretKey2025VeryLongSecretKey
+      JWT_EXPIRATION: 86400000            # 24 heures en ms
+
+      # --- Flyway ---
+      SPRING_FLYWAY_ENABLED: "false"
+
+      # --- Swagger ---
+      SPRINGDOC_SWAGGER_UI_PATH: /swagger-ui.html
+
+      # --- JVM options (mémoire réduite pour dev) ---
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+
     depends_on:
       mysql:
-        condition: service_healthy   # attend que MySQL soit prêt
+        condition: service_healthy        # attend que MySQL soit prêt
+      redis:
+        condition: service_healthy        # attend que Redis soit prêt
+    networks:
+      - healthcare_net
 
+# ============================================================
+#  VOLUMES — données persistantes entre redémarrages
+# ============================================================
 volumes:
-   mysql_data:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+# ============================================================
+#  RÉSEAU — communication interne entre les 3 services
+# ============================================================
+networks:
+  healthcare_net:
+    driver: bridge

@@ -6,6 +6,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "users")
+@Inheritance(strategy = InheritanceType.JOINED)
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class User {
 
@@ -24,6 +25,6 @@ public class User {
     @NotBlank(message = "Le mot de passe est obligatoire")
     private String password;
 
-    @Enumerated(EnumType.STRING)  // stocke "ADMIN" pas 0,1,2
-    private Role role = Role.PATIENT;   // valeur par défaut
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.PATIENT;
 }

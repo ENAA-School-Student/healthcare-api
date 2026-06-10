@@ -1,9 +1,13 @@
 package com.healthcare.medicalsystem.controller;
 
 import com.healthcare.medicalsystem.dto.RendezVousDTO;
+import com.healthcare.medicalsystem.entity.StatutRendezVous;
 import com.healthcare.medicalsystem.service.RendezVousService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,9 +45,16 @@ public class RendezVousController {
 
 
     @GetMapping
-    @Operation(summary = "Lister les RendezVous")
-    public ResponseEntity<List<RendezVousDTO>> findAll() {
-        return ResponseEntity.ok(rendezVousService.findAll());
+    public ResponseEntity<Page<RendezVousDTO>> findAll(
+            @PageableDefault(size = 10, sort = "dateRendezVous") Pageable pageable) {
+        return ResponseEntity.ok(rendezVousService.findAll(pageable));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<RendezVousDTO>> findByStatut(
+            @RequestParam StatutRendezVous statut,
+            @PageableDefault(size = 10, sort = "dateRendezVous") Pageable pageable) {
+        return ResponseEntity.ok(rendezVousService.findByStatut(statut, pageable));
     }
 
 

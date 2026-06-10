@@ -14,6 +14,5 @@ public interface MedecinMapper {
     MedecinDTO toDTO(Medecin medecin);
     Medecin toEntity(MedecinDTO dto);
     List<MedecinDTO> toDTOList(List<Medecin> medecins);
-    Page<MedecinDTO> toDTOList(Page<Medecin> medecins);
 
 }
