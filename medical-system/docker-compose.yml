@@ -1,15 +1,8 @@
 version: '3.8'
 
-  # ============================================================
-  #  HealthCare+ — Docker Compose complet (Partie 3)
-  #  Services : MySQL 8 + Redis 7 + Spring Boot App
-  # ============================================================
 
 services:
 
-  # ----------------------------------------------------------
-  # 1. BASE DE DONNÉES MySQL
-  # ----------------------------------------------------------
   mysql:
     image: mysql:8.0
     container_name: healthcare_mysql
@@ -61,7 +54,7 @@ services:
   app:
     build:
       context: ./medical-system           # dossier contenant le Dockerfile
-      dockerfile: Dockerfile
+      dockerfile: ../Dockerfile
     container_name: healthcare_app
     restart: unless-stopped
     ports:
